@@ -9,7 +9,7 @@ caretHex: .byte 0x5E
 xHex: .byte 0x78
 
 array: .space 60
-sanitizedArr: .space 60
+sanitizedArr: .byte '0','0','0','0','0','0','0','0','0','0'
 
 .text
 .globl main
@@ -70,35 +70,122 @@ tokenize:
     
     
 getTerm1:
+    move $s1, $a1
+    # lb $s1, $a1
+    li $s2, 0
+    
     lb $t0, 0($a0)
     lb $t1, 1($a0)
     lb $t2, 2($a0)
     lb $t3, 3($a0)
     lb $t4, 4($a0)
+    j firstCharacter
     
+addToA1:
+    sb $s7, 0($s1)
+    addi $s2, 4
+    add $s3, $s2, $a1
+    lw $s1, 0($s3)
     
-    
+    jr $ra
+     
 firstCharacter:
     lb $s0, minusHex
-    beq $t0, $s0, jr operationMinus
+    beq $t0, $s0, operationMinus
     lb $s0, xHex
-    beq $t0, $s0, jr x
+    beq $t0, $s0, x
+    move $s6, $t0
     
     jr number
     
     j secondCharacter
 
 secondCharacter:
-
+    lb $s0, xHex
+    beq $t1, $s0,  x
+    lb $s0, caretHex
+    beq $t1, $s0,  caret
+    lb $s0, minusHex
+    beq $t1, $s0, getTerm2
+    lb $s0, plusHex
+    beq $t1, $s0, getTerm2
+    move $s6, $t1
+    
+    jr number
+    
+    j thirdCharacter
+    
+thirdCharacter:
+    lb $s0, xHex
+    beq $t2, $s0, x
+    lb $s0, caretHex
+    beq $t2, $s0, caret
+    lb $s0, minusHex
+    beq $t2, $s0, getTerm2
+    lb $s0, plusHex
+    beq $t2, $s0, getTerm2
+    move $s6, $t2
+    jr number
+    
+    j fourthCharacter
+    
+fourthCharacter:
+    lb $s0, caretHex
+    beq $t3, $s0, caret
+    lb $s0, minusHex
+    beq $t3, $s0, getTerm2
+    lb $s0, plusHex
+    beq $t3, $s0, getTerm2
+    move $s6, $t3
+    
+    jr number
+    
+    j fifthCharacter
+    
+fifthCharacter:
+    lb $s0, minusHex
+    beq $t4, $s0, getTerm2
+    lb $s0, plusHex
+    beq $t4, $s0, getTerm2
+    move $s6, $t4
+    
+    jr number
+    
+    j getTerm2
+    
 operationMinus:
+    lb $s7, minusHex
+    jr addToA1
+    jr $ra
     
 operationPlus:
-
+    lb $s7, plusHex
+    jr addToA1
+    jr $ra
 caret:
-
+    lb $s7, caretHex
+    jr addToA1
+    jr $ra
 x:
+    lb $s7, xHex
+    jr addToA1
+    jr $ra
 
 number:
+    move $s6, $s7
+    jr addToA1
+    jr $ra
+
+
+
+getTerm2:
+    li $v0, 10
+    syscall
+
+    
+    
+    
+    
     
     
     
