@@ -42,12 +42,22 @@ derivative:
     li $a1, 60
     syscall
     
+    
+    # srl $a0, $a0, 5
+    # li $v0, 4
+    # syscall
+    
+    j tokenize
+    
+    
+tokenize:
+    # this function takes a user input array in $a0 and reads each term into seperate registers
+    lb $t0, 0($a0)
     li $v0, 4
     syscall
     
-    srl $a0, $a0, 5
-    li $v0, 4
+    li $a0, 4
+    li $v0, 1
     syscall
-    
     
     
