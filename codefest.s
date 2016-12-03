@@ -7,7 +7,16 @@ plusHex: .byte 0x2B
 minusHex: .byte 0x2D
 caretHex: .byte 0x5E
 xHex: .byte 0x78
-
+zeroHex: .byte '0'
+oneHex: .byte '1'
+twoHex: .byte '2'
+threeHex: .byte '3'
+fourHex: .byte '4'
+fiveHex: .byte '5'
+sixHex: .byte '6'
+sevenHex: .byte '7'
+eightHex: .byte '8'
+nineHex: .byte '9'
 array: .space 60
 sanitizedArr: .word '0','0','0','0','0','0','0','0','0','0'
 
@@ -51,10 +60,6 @@ derivative:
     
     la $a1, sanitizedArr
     
-    # srl $a0, $a0, 5
-    # li $v0, 4
-    # syscall
-    
     j tokenize
     
     
@@ -71,7 +76,7 @@ getTerm1:
     # lb $s1, $a1
     li $s2, 0 # index of array (i)
     
-    li $v0, 1 # for branch checking
+    li $v1, 0 # for branch checking
     li $t9, 0
     
     lb $t0, 0($a0) #Loads each byte into General Purpose registers
@@ -87,7 +92,7 @@ addToA1:
     add $s3, $s2, $a1
     move $s1, $s3
     
-    jr $ra
+    j selectNextCharacter
      
 firstCharacter:
     li $s4, 0
@@ -97,11 +102,11 @@ firstCharacter:
     beq $t0, $s0, x
     move $s6, $t0
     
-    bne $v1, $s4, number
+    beq $v1, $s4, number
     
 
 secondCharacter:
-    li $s4, 0;
+    li $s4, 0
     lb $s0, xHex
     beq $t1, $s0,  x
     lb $s0, caretHex
@@ -112,7 +117,7 @@ secondCharacter:
     beq $t1, $s0, getTerm2
     move $s6, $t1
     
-    bne $v1, $s4, number
+    beq $v1, $s4, number
     
     
 thirdCharacter:
@@ -127,7 +132,7 @@ thirdCharacter:
     beq $t2, $s0, getTerm2
     move $s6, $t2
     
-    bne $v1, $s4, number
+    beq $v1, $s4, number
     
     
 fourthCharacter:
@@ -140,7 +145,7 @@ fourthCharacter:
     beq $t3, $s0, getTerm2
     move $s6, $t3
     
-    bne $v1, $s4, number
+    beq $v1, $s4, number
     
 fifthCharacter:
     li $s4, 0
@@ -150,36 +155,78 @@ fifthCharacter:
     beq $t4, $s0, getTerm2
     move $s6, $t4
     
-    bne $v1, $s4, number
+    beq $v1, $s4, number
     
     
 operationMinus:
     li $s4, 1
     lb $s7, minusHex
-    jal addToA1
-    j selectNextCharacter
+    j addToA1
     
     
 operationPlus:
     li $s4, 1
     lb $s7, plusHex
-    jal addToA1
-    j selectNextCharacter
+    j addToA1
 caret:
     li $s4, 1
     lb $s7, caretHex
-    jal addToA1
-    j selectNextCharacter
+    j addToA1
 x:
     li $s4, 1
     lb $s7, xHex
-    jal addToA1
-    j selectNextCharacter
+    j addToA1
 
 number:
-    move $s7, $s6
-    jal addToA1
-    j selectNextCharacter
+    # move $s7, $s6
+    li $s0, 31
+    beq $s6, $s0, if1
+    li $s0, 32
+    beq $s6, $s0, if2
+    li $s0 33
+    beq $s6, $s0, if3
+    li $s0, 34
+    beq $s6, $s0, if4
+    li $s0, 35
+    beq $s6, $s0, if5
+    li $s0, 36
+    beq $s6, $s0, if6
+    li $s0, 37
+    beq $s6, $s0, if7
+    li $s0, 38
+    beq $s6, $s0, if8
+    li $s0, 39
+    beq $s6, $s0, if9
+    j addToA1
+    
+if1: 
+    lb $s7, oneHex
+    j addToA1
+if2: 
+    lb $s7, twoHex
+    j addToA1
+if3: 
+    lb $s7, threeHex
+    j addToA1
+if4: 
+    lb $s7, fourHex
+    j addToA1
+if5: 
+    lb $s7, fiveHex
+    j addToA1
+if6: 
+    lb $s7, sixHex
+    j addToA1
+if7: 
+    lb $s7, sevenHex
+    j addToA1
+if8: 
+    lb $s7, eightHex
+    j addToA1
+if9: 
+    lb $s7, nineHex
+    j addToA1
+
 
 selectNextCharacter:
     addi $t9, 1
@@ -196,7 +243,7 @@ selectNextCharacter:
     beq $t9, $t8, fifthCharacter
     
     li $t8, 5
-    beq $t9, $t8. getTerm2
+    beq $t9, $t8, getTerm2
     
     
 getTerm2:
