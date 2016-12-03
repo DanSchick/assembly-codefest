@@ -63,18 +63,18 @@ tokenize:
     li $v0, 4
     syscall
     
-    
-    
-    
     j getTerm1
     
     
 getTerm1:
-    move $s1, $a1
+    move $s1, $a1 # load start of arr
     # lb $s1, $a1
-    li $s2, 0
+    li $s2, 0 # index of array (i)
     
-    lb $t0, 0($a0)
+    li $v0, 1 # for branch checking
+    li $t9, 0
+    
+    lb $t0, 0($a0) #Loads each byte into General Purpose registers
     lb $t1, 1($a0)
     lb $t2, 2($a0)
     lb $t3, 3($a0)
@@ -83,24 +83,25 @@ getTerm1:
     
 addToA1:
     sb $s7, 0($s1)
-    # addi $s2, 4
-    # add $s3, $s2, $a1
-    # move $s1, $s3
+    addi $s2, 4
+    add $s3, $s2, $a1
+    move $s1, $s3
     
     jr $ra
      
 firstCharacter:
+    li $s4, 0
     lb $s0, minusHex
     beq $t0, $s0, operationMinus
     lb $s0, xHex
     beq $t0, $s0, x
     move $s6, $t0
     
-    jr number
+    bne $v1, $s4, number
     
-    j secondCharacter
 
 secondCharacter:
+    li $s4, 0;
     lb $s0, xHex
     beq $t1, $s0,  x
     lb $s0, caretHex
@@ -111,11 +112,11 @@ secondCharacter:
     beq $t1, $s0, getTerm2
     move $s6, $t1
     
-    jr number
+    bne $v1, $s4, number
     
-    j thirdCharacter
     
 thirdCharacter:
+    li $s4, 0
     lb $s0, xHex
     beq $t2, $s0, x
     lb $s0, caretHex
@@ -125,11 +126,12 @@ thirdCharacter:
     lb $s0, plusHex
     beq $t2, $s0, getTerm2
     move $s6, $t2
-    jr number
     
-    j fourthCharacter
+    bne $v1, $s4, number
+    
     
 fourthCharacter:
+    li $s4, 0
     lb $s0, caretHex
     beq $t3, $s0, caret
     lb $s0, minusHex
@@ -138,46 +140,65 @@ fourthCharacter:
     beq $t3, $s0, getTerm2
     move $s6, $t3
     
-    jr number
-    
-    j fifthCharacter
+    bne $v1, $s4, number
     
 fifthCharacter:
+    li $s4, 0
     lb $s0, minusHex
     beq $t4, $s0, getTerm2
     lb $s0, plusHex
     beq $t4, $s0, getTerm2
     move $s6, $t4
     
-    jr number
+    bne $v1, $s4, number
     
-    j getTerm2
     
 operationMinus:
+    li $s4, 1
     lb $s7, minusHex
-    jr addToA1
-    jr $ra
+    jal addToA1
+    j selectNextCharacter
+    
     
 operationPlus:
+    li $s4, 1
     lb $s7, plusHex
-    jr addToA1
-    jr $ra
+    jal addToA1
+    j selectNextCharacter
 caret:
+    li $s4, 1
     lb $s7, caretHex
-    jr addToA1
-    jr $ra
+    jal addToA1
+    j selectNextCharacter
 x:
+    li $s4, 1
     lb $s7, xHex
-    jr addToA1
-    jr $ra
+    jal addToA1
+    j selectNextCharacter
 
 number:
     move $s7, $s6
-    jr addToA1
-    jr $ra
+    jal addToA1
+    j selectNextCharacter
 
-
-
+selectNextCharacter:
+    addi $t9, 1
+    li $t8, 1
+    beq $t9, $t8, secondCharacter
+    
+    li $t8, 2
+    beq $t9, $t8, thirdCharacter
+    
+    li $t8, 3
+    beq $t9, $t8, fourthCharacter
+    
+    li $t8, 4
+    beq $t9, $t8, fifthCharacter
+    
+    li $t8, 5
+    beq $t9, $t8. getTerm2
+    
+    
 getTerm2:
     li $v0, 10
     syscall
