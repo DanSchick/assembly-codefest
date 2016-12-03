@@ -9,7 +9,7 @@ caretHex: .byte 0x5E
 xHex: .byte 0x78
 
 array: .space 60
-sanitizedArr: .byte '0','0','0','0','0','0','0','0','0','0'
+sanitizedArr: .word '0','0','0','0','0','0','0','0','0','0'
 
 .text
 .globl main
@@ -83,9 +83,9 @@ getTerm1:
     
 addToA1:
     sb $s7, 0($s1)
-    addi $s2, 4
-    add $s3, $s2, $a1
-    lw $s1, 0($s3)
+    # addi $s2, 4
+    # add $s3, $s2, $a1
+    # move $s1, $s3
     
     jr $ra
      
@@ -172,7 +172,7 @@ x:
     jr $ra
 
 number:
-    move $s6, $s7
+    move $s7, $s6
     jr addToA1
     jr $ra
 
