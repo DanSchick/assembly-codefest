@@ -3,7 +3,13 @@ welcomePrompt: .asciiz "Welcome to our calculator!"
 calcTypePrompt: .asciiz "What do you want to do?\n(1) Calculate a Derivative\n(2) Calculate an Integral\n"
 derivativePrompt: .asciiz "Enter in an equation. Maximum of 3 terms.\nExample: 4x^2+2x+4x^3\n"
 
+plusHex: .byte 0x2B
+minusHex: .byte 0x2D
+caretHex: .byte 0x5E
+xHex: .byte 0x78
+
 array: .space 60
+sanitizedArr: .space 60
 
 .text
 .globl main
@@ -37,11 +43,13 @@ derivative:
     la $a0, derivativePrompt
     syscall
     
+    
     li $v0, 8
     la $a0, array
     li $a1, 60
     syscall
     
+    la $a1, sanitizedArr
     
     # srl $a0, $a0, 5
     # li $v0, 4
@@ -57,9 +65,8 @@ tokenize:
     
     
     
-    li $a0, 4
-    li $v0, 1
-    syscall
+    
+    j getTerm1
     
     
 getTerm1:
@@ -70,6 +77,31 @@ getTerm1:
     lb $t4, 4($a0)
     
     
+    
+firstCharacter:
+    lb $s0, minusHex
+    beq $t0, $s0, jr operationMinus
+    lb $s0, xHex
+    beq $t0, $s0, jr x
+    
+    jr number
+    
+    j secondCharacter
+
+secondCharacter:
+
+operationMinus:
+    
+operationPlus:
+
+caret:
+
+x:
+
+number:
+    
+    
+    
     # lb $t0, 0($a0)
     # lb $t1, 1($a0)
     # lb $t2, 2($a0)
@@ -77,7 +109,7 @@ getTerm1:
     # lb $t4, 4($a0)
     # lb $t5, 5($a0)
     # lb $s0, 6($a0)
-    # lb $s1, 7($a0)
+    # lb $s1, 7($a0)                                                                      
     # lb $s2, 8($a0)
     # lb $s3, 9($a0)
     # lb $s4, 10($a0)
