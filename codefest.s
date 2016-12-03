@@ -52,12 +52,37 @@ derivative:
     
 tokenize:
     # this function takes a user input array in $a0 and reads each term into seperate registers
-    lb $t0, 0($a0)
     li $v0, 4
     syscall
+    
+    
     
     li $a0, 4
     li $v0, 1
     syscall
     
     
+getTerm1:
+    lb $t0, 0($a0)
+    lb $t1, 1($a0)
+    lb $t2, 2($a0)
+    lb $t3, 3($a0)
+    lb $t4, 4($a0)
+    
+    
+    # lb $t0, 0($a0)
+    # lb $t1, 1($a0)
+    # lb $t2, 2($a0)
+    # lb $t3, 3($a0)
+    # lb $t4, 4($a0)
+    # lb $t5, 5($a0)
+    # lb $s0, 6($a0)
+    # lb $s1, 7($a0)
+    # lb $s2, 8($a0)
+    # lb $s3, 9($a0)
+    # lb $s4, 10($a0)
+    # lb $s5, 11($a0)
+    # lb $s6, 12($a0)
+    # lb $s7, 13($a0)
+    # lb    , 14($a0)
+    # lb    , 15($a0)
