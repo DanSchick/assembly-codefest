@@ -5,7 +5,7 @@ derivativePrompt: .asciiz "Enter in an equation. Maximum of 3 terms.\nExample: 4
 
 plusHex: .byte 0x2B
 minusHex: .byte 0x2D
-caretHex: .byte 0x5E
+caretHex: .byte 0x77
 xHex: .byte 0x78
 zeroHex: .byte '0'
 oneHex: .byte '1'
@@ -88,7 +88,7 @@ getTerm1:
     
 addToA1:
     sb $s7, 0($s1)
-    addi $s2, 4
+    addi $s2, $s2, 4
     add $s3, $s2, $a1
     move $s1, $s3
     
@@ -108,9 +108,9 @@ firstCharacter:
 secondCharacter:
     li $s4, 0
     lb $s0, xHex
-    beq $t1, $s0,  x
+    beq $t1, $s0, x
     lb $s0, caretHex
-    beq $t1, $s0,  caret
+    beq $t1, $s0, caret
     lb $s0, minusHex
     beq $t1, $s0, getTerm2
     lb $s0, plusHex
@@ -168,6 +168,7 @@ operationPlus:
     li $s4, 1
     lb $s7, plusHex
     j addToA1
+    
 caret:
     li $s4, 1
     lb $s7, caretHex
@@ -229,7 +230,7 @@ if9:
 
 
 selectNextCharacter:
-    addi $t9, 1
+    addi $t9, $t9, 1
     li $t8, 1
     beq $t9, $t8, secondCharacter
     
